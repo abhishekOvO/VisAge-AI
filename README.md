@@ -162,3 +162,18 @@ docker-compose down
 
 - **Dataset:** Trained on the [UTKFace Dataset](https://susanqq.github.io/UTKFace/) (23,708 facial images).
 - **License:** MIT License. Built with PyTorch, MobileNetV2, OpenCV, and FastAPI.
+
+---
+
+<div align="center">
+
+### 💡 Author & Lead Developer
+
+Designed, Engineered & Fine-Tuned by **[Abhishek](https://github.com/abhishekOvO)**
+
+[![GitHub Profile](https://img.shields.io/badge/GitHub-abhishekOvO-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/abhishekOvO)
+[![VisAge AI Repository](https://img.shields.io/badge/Repository-VisAge--AI-007acc?style=for-the-badge&logo=visualstudiocode&logoColor=white)](https://github.com/abhishekOvO/VisAge-AI)
+
+*© 2026 VisAge AI. Created by Abhishek. All rights reserved.*
+
+</div>
