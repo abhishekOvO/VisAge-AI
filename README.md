@@ -4,12 +4,12 @@
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-https%3A%2F%2Fvisage--ai.onrender.com-007acc?style=for-the-badge&logo=render&logoColor=white)](https://visage-ai.onrender.com)
 [![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![EfficientNet-B0](https://img.shields.io/badge/Model-EfficientNet--B0-007acc?style=for-the-badge&logo=google&logoColor=white)](https://pytorch.org/vision/stable/models/efficientnet.html)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![ONNX Runtime](https://img.shields.io/badge/ONNX_Runtime-005A9E?style=for-the-badge&logo=onnx&logoColor=white)](https://onnxruntime.ai/)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
-[![VS Code Theme](https://img.shields.io/badge/UI_Theme-VS_Code_Blue_%26_White-007acc?style=for-the-badge&logo=visualstudiocode&logoColor=white)](#-user-interface--features)
 
-*An end-to-end Computer Vision & Deep Multi-Task Convolutional Neural Network (MobileNetV2 Transfer Learning) platform for real-time age estimation and gender binary classification.*
+*An end-to-end Computer Vision & Deep Multi-Task Convolutional Neural Network (EfficientNet-B0 Transfer Learning) platform for real-time age estimation and gender binary classification.*
 
 </div>
 
@@ -23,8 +23,8 @@ Access the live web application deployed on Render:
 
 ## 🌟 Key Features
 
-- **Multi-Task Neural Network:** Joint estimation of continuous Age regression (L1 MAE Loss) and binary Gender classification (Binary Cross-Entropy Loss) using a shared pre-trained MobileNetV2 backbone.
-- **High Performance:** Achieves **0.9597 ROC-AUC**, **87.77% Test Accuracy** (92.58% Validation / 95.16% Train), and **6.43 years Validation Age MAE** (7.74y baseline).
+- **Multi-Task Neural Network:** Joint estimation of continuous Age regression (L1 MAE Loss) and binary Gender classification (Binary Cross-Entropy Loss) using a pre-trained **EfficientNet-B0** backbone.
+- **Breakthrough Performance:** Achieves **0.9831 ROC-AUC**, **92.37% Test Accuracy** (93.04% Validation / 94.75% Train), and **6.99 years Test Age MAE** (6.85y Val MAE).
 - **Computer Vision Pipeline:** Pre-processed face detection and landmark alignment via OpenCV Haar Cascade (`haarcascade_frontalface_default`).
 - **VS Code Signature UI Theme:** Glassmorphic single-page web app styled with VS Code Blue & White design palette, featuring live browser webcam feeds (`navigator.mediaDevices`), drag-and-drop file uploads, test set sample galleries, and a Light/Dark theme toggle.
 - **RESTful API Backend:** Fast async FastAPI web server providing `/api/health`, `/api/predict`, `/api/predict-base64`, and `/api/sample-images` endpoints.
@@ -40,24 +40,23 @@ Evaluated on a 10% held-out test split from 23,708 aligned facial images in the 
 
 | Category | Metric | Score / Result |
 | :--- | :--- | :---: |
-| **Gender Classification** | **Accuracy** | **87.77%** |
-| | **ROC AUC** | **0.9597** |
-| | **Precision** | **89.49%** |
-| | **Recall** | **84.28%** |
-| | **F1 Score** | **0.8681** |
-| **Age Regression** | **Mean Absolute Error (MAE)** | **10.53 years** (Val MAE: **6.43 yrs**) |
-| | **Root Mean Squared Error (RMSE)** | **14.92 years** |
-| | **R² Determination Score** | **0.4362** |
+| **Gender Classification** | **Accuracy** | **92.37%** |
+| | **ROC AUC** | **0.9831** |
+| | **Precision** | **92.95%** |
+| | **Recall** | **90.90%** |
+| | **F1 Score** | **0.9192** |
+| **Age Regression** | **Mean Absolute Error (MAE)** | **6.99 years** (Val MAE: **6.85 yrs**) |
+| | **Root Mean Squared Error (RMSE)** | **9.98 years** |
+| | **R² Determination Score** | **0.7479** |
 
 ### Fine-Tuning Epoch Progression
 | Stage | Validation Loss | Validation Gender Acc | Train Gender Acc | Validation Age MAE |
 | :--- | :---: | :---: | :---: | :---: |
-| **Baseline Head Warmup** | `0.6578` | `73.01%` | `70.59%` | `11.76 yrs` |
-| **Phase 1 Complete (Epoch 8)** | `0.5422` | `78.62%` | `77.85%` | `10.01 yrs` |
-| **Phase 2 Fine-Tune (Epoch 12)** | `0.3929` | `86.42%` | `86.45%` | `8.75 yrs` |
-| **Phase 2 Fine-Tune (Epoch 20)** | `0.3348` | `88.36%` | `89.10%` | `7.74 yrs` |
-| **Extended Fine-Tune (Epoch 36)** | `0.2549` | `92.49%` | `94.28%` | `6.50 yrs` |
-| **Extended Fine-Tune (Best)** | **`0.2525`** | **`92.58%`** | **`95.16%`** | **`6.43 yrs`** |
+| **Epoch 01 (Initial)** | `0.4637` | `85.15%` | `72.65%` | `12.07 yrs` |
+| **Epoch 04** | `0.2961` | `91.19%` | `89.55%` | `7.92 yrs` |
+| **Epoch 08** | `0.2627` | `92.32%` | `92.22%` | `7.34 yrs` |
+| **Epoch 11** | `0.2489` | **`93.04%`** | **`94.55%`** | `7.02 yrs` |
+| **Epoch 13 (Best)** | **`0.2456`** | **`93.00%`** | **`94.62%`** | **`6.85 yrs`** |
 
 ---
 
@@ -74,7 +73,7 @@ VisAge-AI/
 ├── src/
 │   ├── __init__.py
 │   ├── dataset.py           # UTKFace PyTorch Loader & Augmentation Pipeline
-│   ├── model.py             # Multi-Task MobileNetV2 Architecture Design
+│   ├── model.py             # Multi-Task EfficientNet-B0 Architecture Design
 │   ├── train.py             # Multi-Epoch Chunked Training & Fine-Tuning Engine
 │   ├── evaluate.py          # Metric Generator (Accuracy, Precision, MAE, R²)
 │   └── predict.py           # OpenCV Face Detection & Inference Engine
@@ -161,7 +160,7 @@ docker-compose down
 ## 📜 License & Acknowledgments
 
 - **Dataset:** Trained on the [UTKFace Dataset](https://susanqq.github.io/UTKFace/) (23,708 facial images).
-- **License:** MIT License. Built with PyTorch, MobileNetV2, OpenCV, and FastAPI.
+- **License:** MIT License. Built with PyTorch, EfficientNet-B0, OpenCV, and FastAPI.
 
 ---
 
