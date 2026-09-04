@@ -5,29 +5,38 @@ import torchvision.models as models
 class AgeGenderModel(nn.Module):
     """
     Multi-task Deep Convolutional Neural Network for simultaneous Age Regression
-    and Gender Binary Classification based on MobileNetV2 architecture.
+    and Gender Binary Classification based on EfficientNet-B0 architecture.
     """
-    def __init__(self, pretrained=True):
+    def __init__(self, pretrained=True, backbone_name="efficientnet_b0"):
         super(AgeGenderModel, self).__init__()
         
-        # Load MobileNetV2 backbone
-        if hasattr(models, 'MobileNet_V2_Weights'):
-            weights = models.MobileNet_V2_Weights.DEFAULT if pretrained else None
-            mobilenet = models.mobilenet_v2(weights=weights)
-        else:
-            mobilenet = models.mobilenet_v2(pretrained=pretrained)
-            
-        self.features = mobilenet.features
-        self.pool = nn.AdaptiveAvgPool2d((1, 1))
+        self.backbone_name = backbone_name
         
-        in_features = mobilenet.last_channel # 1280
+        if backbone_name == "efficientnet_b0":
+            if hasattr(models, 'EfficientNet_B0_Weights'):
+                weights = models.EfficientNet_B0_Weights.DEFAULT if pretrained else None
+                backbone = models.efficientnet_b0(weights=weights)
+            else:
+                backbone = models.efficientnet_b0(pretrained=pretrained)
+            self.features = backbone.features
+            in_features = 1280
+        else:
+            if hasattr(models, 'MobileNet_V2_Weights'):
+                weights = models.MobileNet_V2_Weights.DEFAULT if pretrained else None
+                backbone = models.mobilenet_v2(weights=weights)
+            else:
+                backbone = models.mobilenet_v2(pretrained=pretrained)
+            self.features = backbone.features
+            in_features = backbone.last_channel
+
+        self.pool = nn.AdaptiveAvgPool2d((1, 1))
         
         # Shared feature projection layer
         self.shared_fc = nn.Sequential(
             nn.Linear(in_features, 256),
             nn.BatchNorm1d(256),
             nn.SiLU(),
-            nn.Dropout(0.35)
+            nn.Dropout(0.3)
         )
         
         # Gender Classification Head (0 = Male, 1 = Female)
@@ -57,13 +66,13 @@ class AgeGenderModel(nn.Module):
         
         return gender_logit, age
 
-def get_model(pretrained=True):
-    return AgeGenderModel(pretrained=pretrained)
+def get_model(pretrained=True, backbone_name="efficientnet_b0"):
+    return AgeGenderModel(pretrained=pretrained, backbone_name=backbone_name)
 
 if __name__ == "__main__":
     model = get_model(pretrained=False)
     dummy_input = torch.randn(4, 3, 200, 200)
     gender_out, age_out = model(dummy_input)
-    print("Model loaded successfully!")
+    print("EfficientNet-B0 Model loaded successfully!")
     print("Gender output shape:", gender_out.shape)
     print("Age output shape:", age_out.shape)

@@ -7,7 +7,7 @@ from src.dataset import get_dataloaders
 
 MODEL_PATH = os.path.join("saved_models", "best_model.pt")
 
-def evaluate_model(data_dir=r"C:\Users\ashid\Documents\all_utkface", model_path=MODEL_PATH, batch_size=32, img_size=200):
+def evaluate_model(data_dir=r"C:\Users\ashid\Documents\all_utkface", model_path=MODEL_PATH, batch_size=32, img_size=128):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"[EVALUATE] Using device: {device}")
     
@@ -16,7 +16,7 @@ def evaluate_model(data_dir=r"C:\Users\ashid\Documents\all_utkface", model_path=
         
     _, _, test_loader = get_dataloaders(data_dir=data_dir, batch_size=batch_size, img_size=img_size)
     
-    model = get_model(pretrained=False).to(device)
+    model = get_model(pretrained=False, backbone_name="efficientnet_b0").to(device)
     model.load_state_dict(torch.load(model_path, map_location=device))
     model.eval()
     

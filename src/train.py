@@ -89,10 +89,10 @@ def evaluate(model, dataloader, criterion_gender, criterion_age, device, gender_
     
     return val_loss, val_gender_acc, val_age_mae
 
-def train_additional_epochs(data_dir=r"C:\Users\ashid\Documents\all_utkface", additional_epochs=20, chunk_size=3200, batch_size=128, img_size=128):
+def train_additional_epochs(data_dir=r"C:\Users\ashid\Documents\all_utkface", additional_epochs=15, chunk_size=4000, batch_size=128, img_size=128):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("=" * 65)
-    print("EXTENDED 20-EPOCH FINE-TUNING ACCURACY ENGINE")
+    print("EFFICIENTNET-B0 HIGH-ACCURACY FINE-TUNING ENGINE")
     print("=" * 65)
     print(f"Device:           {device.type.upper()}")
     print(f"Total Dataset:    23,708 Images")
@@ -114,33 +114,22 @@ def train_additional_epochs(data_dir=r"C:\Users\ashid\Documents\all_utkface", ad
     val_dataset = UTKFaceDataset(X_val, y_age_val, y_gen_val, transform=val_tf)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
     
-    model = get_model(pretrained=True).to(device)
+    model = get_model(pretrained=True, backbone_name="efficientnet_b0").to(device)
     
-    # Load previous best checkpoint if available
-    if os.path.exists(MODEL_SAVE_PATH):
-        print(f"[RESUME] Loading best checkpoint from {MODEL_SAVE_PATH}...")
-        model.load_state_dict(torch.load(MODEL_SAVE_PATH, map_location=device))
-    else:
-        print("[TRAIN] Starting fine-tuning from initial weights...")
-        
     criterion_gender = nn.BCEWithLogitsLoss()
     criterion_age = nn.L1Loss()
     
-    # Unfreeze top backbone blocks for deeper fine-tuning
-    print("--- Unfreezing Deep MobileNetV2 Feature Backbone for Extended Fine-Tuning ---")
-    for param in model.features[-8:].parameters():
+    # Unfreeze deep EfficientNet features for maximum accuracy
+    print("--- Unfreezing EfficientNet-B0 Feature Layers for High-Accuracy Fine-Tuning ---")
+    for param in model.features[-6:].parameters():
         param.requires_grad = True
         
-    optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=4e-4, weight_decay=1e-4)
+    optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=5e-4, weight_decay=1e-4)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=additional_epochs, eta_min=1e-5)
     
-    # Initial evaluation of loaded checkpoint
-    init_val_loss, init_gen_acc, init_age_mae = evaluate(model, val_loader, criterion_gender, criterion_age, device)
-    print(f"[BASELINE CHECKPOINT] Loaded Model Val Loss: {init_val_loss:.4f} | Gen Acc: {init_gen_acc:.2f}% | Age MAE: {init_age_mae:.2f} y\n")
-    
-    best_val_loss = init_val_loss
-    best_gender_acc = init_gen_acc
-    best_age_mae = init_age_mae
+    best_val_loss = float('inf')
+    best_gender_acc = 0.0
+    best_age_mae = 99.0
     
     start_time = time.time()
     num_train_samples = len(full_train_dataset)
@@ -174,10 +163,10 @@ def train_additional_epochs(data_dir=r"C:\Users\ashid\Documents\all_utkface", ad
             
     total_time = time.strftime("%H:%M:%S", time.gmtime(time.time() - start_time))
     print("\n" + "=" * 65)
-    print(f"EXTENDED FINE-TUNING COMPLETE IN {total_time}")
+    print(f"EFFICIENTNET-B0 FINE-TUNING COMPLETE IN {total_time}")
     print(f"   * Best Gender Accuracy: {best_gender_acc:.2f}%")
     print(f"   * Best Age MAE:         {best_age_mae:.2f} years")
     print("=" * 65 + "\n")
 
 if __name__ == "__main__":
-    train_additional_epochs(additional_epochs=20, chunk_size=3200)
+    train_additional_epochs(additional_epochs=15, chunk_size=4000)

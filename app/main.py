@@ -54,7 +54,7 @@ async def health_check():
         "status": "online",
         "model_loaded": os.path.exists(MODEL_PATH),
         "device": str(predictor.device),
-        "architecture": "MobileNetV2 Multi-Task CNN"
+        "architecture": "EfficientNet-B0 Multi-Task CNN"
     }
 
 def process_prediction(cv_img):

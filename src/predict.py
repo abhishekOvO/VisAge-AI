@@ -28,7 +28,7 @@ class AgeGenderPredictor:
             print(f"[WARNING] Could not initialize OpenCV CascadeClassifier: {e}")
         
         # Load PyTorch Model
-        self.model = get_model(pretrained=False).to(self.device)
+        self.model = get_model(pretrained=False, backbone_name="efficientnet_b0").to(self.device)
         if os.path.exists(model_path):
             self.model.load_state_dict(torch.load(model_path, map_location=self.device))
             print(f"[PREDICT] PyTorch model loaded from: {model_path}")
