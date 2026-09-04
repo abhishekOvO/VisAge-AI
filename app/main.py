@@ -107,7 +107,8 @@ async def predict_base64(payload: Base64ImageRequest):
 
 @app.get("/api/sample-images")
 async def get_sample_images():
-    sample_dir = r"C:\Users\ashid\Documents\all_utkface"
+    repo_sample_dir = os.path.join(STATIC_DIR, "samples")
+    sample_dir = repo_sample_dir if os.path.exists(repo_sample_dir) and os.listdir(repo_sample_dir) else r"C:\Users\ashid\Documents\all_utkface"
     samples = []
     if os.path.exists(sample_dir):
         files = os.listdir(sample_dir)[:12]
