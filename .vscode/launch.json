@@ -1,0 +1,51 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "🚀 Run FastAPI Web Server (App)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "app.main:app",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "8000",
+                "--reload"
+            ],
+            "jinja": true
+        },
+        {
+            "name": "📊 Run Streamlit Dashboard App",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "streamlit_app.py"
+            ]
+        },
+        {
+            "name": "📷 Run OpenCV Live Camera Prediction",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/predict.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "📈 Run Model Evaluation Report",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/evaluate.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "🏋️ Run Model Training Engine",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/train.py",
+            "console": "integratedTerminal"
+        }
+    ]
+}

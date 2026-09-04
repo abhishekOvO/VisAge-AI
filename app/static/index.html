@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="High-Accuracy Age and Gender Prediction using MobileNetV2 Deep CNN and Computer Vision.">
+  <title>Age & Gender AI Predictor | Deep CNN Vision Platform</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <!-- Ambient Gradient Orbs Background -->
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+  <div class="glow-orb orb-3"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header-card">
+      <div class="logo-group">
+        <div class="brand-logo-wrapper">
+          <svg class="brand-logo-svg" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="60" height="60" rx="16" fill="url(#logo-grad)"/>
+            <!-- Face Scan Target Reticle -->
+            <path d="M18 24V18H24" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M42 24V18H36" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M18 36V42H24" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M42 36V42H36" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Stylized Face / Brain Neural Nodes -->
+            <circle cx="30" cy="26" r="6" stroke="#ffffff" stroke-width="2"/>
+            <path d="M22 40C22 34.5 25.5 32 30 32C34.5 32 38 34.5 38 40" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+            <!-- Scanning Line Glow -->
+            <line x1="14" y1="30" x2="46" y2="30" stroke="#60a5fa" stroke-width="2" stroke-dasharray="2 2"/>
+            <defs>
+              <linearGradient id="logo-grad" x1="0" y1="0" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#007acc"/>
+                <stop offset="1" stop-color="#005a9e"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div>
+          <h1>VisAge <span class="text-gradient">AI</span></h1>
+          <p class="subtitle">Deep Facial Age & Gender Intelligence Engine</p>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="toggleTheme()">
+          <i class="fa-solid fa-sun"></i> Bright Theme
+        </button>
+        <div class="header-badges">
+          <span class="badge badge-accent"><i class="fa-solid fa-microchip"></i> PyTorch / ONNX</span>
+          <span class="badge badge-success" id="status-badge"><span class="status-dot"></span> Model Ready</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="main-grid">
+      <!-- Input Panel -->
+      <section class="card glass-card input-section">
+        <!-- Input Tabs -->
+        <div class="tab-nav">
+          <button class="tab-btn active" id="tab-upload" onclick="switchTab('upload')">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Upload Photo
+          </button>
+          <button class="tab-btn" id="tab-webcam" onclick="switchTab('webcam')">
+            <i class="fa-solid fa-camera"></i> Live Webcam
+          </button>
+          <button class="tab-btn" id="tab-samples" onclick="switchTab('samples')">
+            <i class="fa-solid fa-images"></i> Sample Test Set
+          </button>
+        </div>
+
+        <!-- Tab Content: Upload -->
+        <div class="tab-content active" id="content-upload">
+          <div class="drop-zone" id="drop-zone">
+            <input type="file" id="file-input" accept="image/*" class="file-input">
+            <div class="drop-zone-prompt">
+              <div class="upload-icon-wrapper">
+                <i class="fa-solid fa-image"></i>
+              </div>
+              <h3>Drag & Drop Facial Image Here</h3>
+              <p>Supports JPG, PNG, WEBP (Max 10MB)</p>
+              <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">
+                <i class="fa-solid fa-folder-open"></i> Browse File
+              </button>
+            </div>
+            <div class="image-preview-wrapper hidden" id="preview-wrapper">
+              <img id="image-preview" src="" alt="Selected Facial Image">
+              <button class="btn-icon remove-btn" onclick="clearSelectedImage()" title="Remove Image">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          </div>
+          
+          <button class="btn btn-action btn-block hidden" id="analyze-btn" onclick="predictUploadedImage()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Predict Age & Gender
+          </button>
+        </div>
+
+        <!-- Tab Content: Webcam -->
+        <div class="tab-content hidden" id="content-webcam">
+          <div class="webcam-container">
+            <video id="webcam-video" autoplay playsinline muted></video>
+            <canvas id="webcam-canvas" class="hidden"></canvas>
+            <div class="webcam-overlay" id="webcam-overlay">
+              <i class="fa-solid fa-circle-user"></i>
+              <p>Camera permission required</p>
+            </div>
+          </div>
+          <div class="webcam-controls">
+            <button class="btn btn-primary" id="start-webcam-btn" onclick="startWebcam()">
+              <i class="fa-solid fa-power-off"></i> Start Camera
+            </button>
+            <button class="btn btn-action hidden" id="capture-btn" onclick="captureWebcam()">
+              <i class="fa-solid fa-camera-retro"></i> Capture & Predict
+            </button>
+          </div>
+        </div>
+
+        <!-- Tab Content: Samples -->
+        <div class="tab-content hidden" id="content-samples">
+          <p class="section-desc">Select any sample image from the UTKFace test set to test prediction performance instantly:</p>
+          <div class="samples-grid" id="samples-grid">
+            <div class="skeleton-sample"></div>
+            <div class="skeleton-sample"></div>
+            <div class="skeleton-sample"></div>
+            <div class="skeleton-sample"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Output Results Panel -->
+      <section class="card glass-card results-section">
+        <h2 class="card-title"><i class="fa-solid fa-chart-pie"></i> Prediction Results</h2>
+        
+        <!-- Placeholder Empty State -->
+        <div class="empty-state" id="empty-state">
+          <div class="empty-icon">
+            <i class="fa-solid fa-user-astronaut"></i>
+          </div>
+          <h3>Awaiting Facial Input</h3>
+          <p>Upload a photo, capture from webcam, or pick a sample image to see real-time AI predictions.</p>
+        </div>
+
+        <!-- Loading State Spinner -->
+        <div class="loading-state hidden" id="loading-state">
+          <div class="spinner"></div>
+          <p>Analyzing facial landmarks & extracting deep features...</p>
+        </div>
+
+        <!-- Prediction Content View -->
+        <div class="results-content hidden" id="results-content">
+          <!-- Face Detection Viewport -->
+          <div class="result-image-card">
+            <img id="annotated-result-img" src="" alt="Face Detection Result">
+            <div class="detection-badge" id="detection-status-badge">
+              <i class="fa-solid fa-face-smile"></i> Face Detected
+            </div>
+          </div>
+
+          <!-- Predictions Metric Grid -->
+          <div class="metrics-grid">
+            <!-- Gender Card -->
+            <div class="metric-card card-gender" id="gender-card">
+              <div class="metric-header">
+                <span class="metric-label">Predicted Gender</span>
+                <i class="fa-solid fa-mars-female metric-icon" id="gender-icon"></i>
+              </div>
+              <div class="metric-value" id="gender-val">Female</div>
+              <div class="confidence-bar-container">
+                <div class="confidence-info">
+                  <span>Confidence</span>
+                  <span id="gender-conf-val">98.5%</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill" id="gender-progress-fill" style="width: 0%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Age Card -->
+            <div class="metric-card card-age">
+              <div class="metric-header">
+                <span class="metric-label">Predicted Age</span>
+                <i class="fa-solid fa-cake-candles metric-icon"></i>
+              </div>
+              <div class="metric-value"><span id="age-val">26</span> <span class="unit">years</span></div>
+              <div class="age-meta">
+                <span class="age-range-tag"><i class="fa-solid fa-arrows-left-right"></i> Est Range: <strong id="age-range-val">23 - 29</strong></span>
+                <span class="life-stage-tag" id="life-stage-val">Adult</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Additional AI Insights -->
+          <div class="insights-card">
+            <h3><i class="fa-solid fa-lightbulb"></i> Model Insights & Analysis</h3>
+            <ul class="insights-list">
+              <li><i class="fa-solid fa-circle-check"></i> <strong>Feature Backbone:</strong> MobileNetV2 pretrained on 1.2M ImageNet features.</li>
+              <li><i class="fa-solid fa-circle-check"></i> <strong>Multi-Head Loss:</strong> Joint optimization of Binary Cross-Entropy and L1 MAE loss.</li>
+              <li><i class="fa-solid fa-circle-check"></i> <strong>Face Alignment:</strong> Pre-processed with OpenCV frontal face cascade detector.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>Built with PyTorch, MobileNetV2, OpenCV & FastAPI. Trained on UTKFace Dataset (23,700+ facial images).</p>
+    </footer>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
